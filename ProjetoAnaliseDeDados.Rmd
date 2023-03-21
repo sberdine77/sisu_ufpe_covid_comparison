@@ -1,0 +1,134 @@
+---
+title: "Projeto Análise de dados"
+output: html_document
+date: "2023-03-21"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = '/Users/savioberdine/Library/CloudStorage/OneDrive-Personal/Documentos/UFRPE/AnaliseDeDados/sisu_ufpe_covid_comparison')
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+## Impactos da pandemia de COVID-19 na entrada de estudantes da UFPE via SISU
+
+Nos dados de 2020, constam os alunos que fizeram ENEM em 2019. Nos dados de 2021, constam os alunos que fizeram ENEM em 2020, já em plena pandemia.
+
+```{r, include=FALSE}
+# install.packages("plotly")
+library(plotly)
+#install.packages("dplyr")
+library(dplyr)
+```
+
+### Começamos extraindo os dados das respectivas planilhas e colocamo-os em datasets:
+
+```{r}
+data_2020 <- read.csv('discentes-ingressos-sisu-2020-ufpe.csv')
+df <- apply(data_2020, 2, as.character)
+Encoding(df)  <- "UTF-8"
+data_2020 <- as.data.frame(df)
+#View(data_2020)
+
+data_2021 <- read.csv('discentes-ingressos-sisu-2021-ufpe.csv')
+df <- apply(data_2021, 2, as.character)
+Encoding(df)  <- "UTF-8"
+data_2021 <- as.data.frame(df)
+#View(data_2021)
+```
+
+
+### Criamos um dataset com duas novas variáveis: QtdAlunos e PercAlunos, representando a quantidade de alunos e o percentual de alunos agrupados pela escolaridade do pai:
+
+```{r}
+students_by_father_education_2020 <- data_2020 %>%
+  filter(ESCOLARIDADE_PAI != "") %>%
+  group_by(ESCOLARIDADE_PAI) %>%
+  summarise(
+    QtdAlunos = n(),
+    PercAlunos = (n()/nrow(data_2020))
+  )
+
+par(mar = c(5, 10, 5, 5))
+barplot(main = "2020 - Estudantes de acordo com a educação do pai", 
+        students_by_father_education_2020$PercAlunos, 
+        names.arg = students_by_father_education_2020$ESCOLARIDADE_PAI, 
+        horiz = TRUE, 
+        las = 1,
+        cex.names = 0.5)
+```
+
+### Perceba que, criando as mesmas variáveis para a escolaridade da mãe e analisando o gráfico, parece haver uma similaridade com os dados da escolaridade do pai:
+
+```{r}
+students_by_mother_education_2020 <- data_2020 %>%
+  filter(ESCOLARIDADE_MAE != "") %>%
+  group_by(ESCOLARIDADE_MAE) %>%
+  summarise(
+    QtdAlunos = n(),
+    PercAlunos = (n()/nrow(data_2020))
+  )
+
+par(mar = c(5, 10, 5, 5))
+barplot(main = "2020 - Estudantes de acordo com a educação da mãe", 
+        students_by_mother_education_2020$PercAlunos, 
+        names.arg = students_by_mother_education_2020$ESCOLARIDADE_MAE, 
+        horiz = TRUE, 
+        las = 1,
+        cex.names = 0.5)
+```
+
+### Investigando mais a fundo percebemos que, em 2021, mesmo com percentuais diferentes para cada tipo de escolaridade, os percentuais de alunos ingressantes por escolaridade do pai e mãe permanecem similares entre si:
+
+```{r}
+students_by_father_education_2021 <- data_2021 %>%
+  filter(ESCOLARIDADE_PAI != "") %>%
+  group_by(ESCOLARIDADE_PAI) %>%
+  summarise(
+    QtdAlunos = n(),
+    PercAlunos = (n()/nrow(data_2021))
+  )
+
+students_by_mother_education_2021 <- data_2021 %>%
+  filter(ESCOLARIDADE_MAE != "") %>%
+  group_by(ESCOLARIDADE_MAE) %>%
+  summarise(
+    QtdAlunos = n(),
+    PercAlunos = (n()/nrow(data_2021))
+  )
+
+barplot(main = "2021 - Estudantes de acordo com a educação do pai", 
+        students_by_father_education_2021$PercAlunos, 
+        names.arg = students_by_father_education_2021$ESCOLARIDADE_PAI, 
+        horiz = TRUE, 
+        las = 1,
+        cex.names = 0.5)
+
+barplot(main = "2021 - Estudantes de acordo com a educação da mãe", 
+        students_by_mother_education_2021$PercAlunos, 
+        names.arg = students_by_mother_education_2021$ESCOLARIDADE_MAE, 
+        horiz = TRUE, 
+        las = 1,
+        cex.names = 0.5)
+```
+
+### Para confirmar a hipótese de que, ano a ano, o percentual de ingressantes por escolaridade do pai e da mãe são similares, utilizaremos a variância...
