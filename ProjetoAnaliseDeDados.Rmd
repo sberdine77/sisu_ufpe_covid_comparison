@@ -38,6 +38,8 @@ Nos dados de 2020, constam os alunos que fizeram ENEM em 2019. Nos dados de 2021
 library(plotly)
 #install.packages("dplyr")
 library(dplyr)
+library(knitr)
+library(kableExtra)
 ```
 
 ### Começamos extraindo os dados das respectivas planilhas e colocamo-os em datasets:
@@ -65,7 +67,7 @@ students_by_father_education_2020 <- data_2020 %>%
   group_by(ESCOLARIDADE_PAI) %>%
   summarise(
     QtdAlunos = n(),
-    PercAlunos = (n()/nrow(data_2020))
+    PercAlunos = (n()/nrow(data_2020)) * 100
   )
 
 par(mar = c(5, 10, 5, 5))
@@ -85,7 +87,7 @@ students_by_mother_education_2020 <- data_2020 %>%
   group_by(ESCOLARIDADE_MAE) %>%
   summarise(
     QtdAlunos = n(),
-    PercAlunos = (n()/nrow(data_2020))
+    PercAlunos = (n()/nrow(data_2020)) * 100
   )
 
 par(mar = c(5, 10, 5, 5))
@@ -105,7 +107,7 @@ students_by_father_education_2021 <- data_2021 %>%
   group_by(ESCOLARIDADE_PAI) %>%
   summarise(
     QtdAlunos = n(),
-    PercAlunos = (n()/nrow(data_2021))
+    PercAlunos = (n()/nrow(data_2021)) * 100
   )
 
 students_by_mother_education_2021 <- data_2021 %>%
@@ -113,9 +115,10 @@ students_by_mother_education_2021 <- data_2021 %>%
   group_by(ESCOLARIDADE_MAE) %>%
   summarise(
     QtdAlunos = n(),
-    PercAlunos = (n()/nrow(data_2021))
+    PercAlunos = (n()/nrow(data_2021)) * 100
   )
 
+par(mar = c(5, 10, 5, 5))
 barplot(main = "2021 - Estudantes de acordo com a educação do pai", 
         students_by_father_education_2021$PercAlunos, 
         names.arg = students_by_father_education_2021$ESCOLARIDADE_PAI, 
@@ -123,6 +126,7 @@ barplot(main = "2021 - Estudantes de acordo com a educação do pai",
         las = 1,
         cex.names = 0.5)
 
+par(mar = c(5, 10, 5, 5))
 barplot(main = "2021 - Estudantes de acordo com a educação da mãe", 
         students_by_mother_education_2021$PercAlunos, 
         names.arg = students_by_mother_education_2021$ESCOLARIDADE_MAE, 
@@ -131,4 +135,43 @@ barplot(main = "2021 - Estudantes de acordo com a educação da mãe",
         cex.names = 0.5)
 ```
 
-### Para confirmar a hipótese de que, ano a ano, o percentual de ingressantes por escolaridade do pai e da mãe são similares, utilizaremos a variância...
+### Mudança na escolaridade dos pais
+<br>
+Podemos perceber a partir dos dados que, o nível de escolaridade dos pais dos ingressantes antes a pandemia, é menor do que o do processo seletivo que ocorreu após do COVID-19. Isso pode indicar que, por conta da crise sanitária e posterior dificuldades sociais, houve um favorecimento circunstancial de ingressantes advindos de famílias que já tinham condições educacionais melhores. Para confirmar essa hipótese, devemos realizar uma análise extensiva dos dados dos próximos anos. De qualquer modo, essa tendência já pode ser observada nas tabelas a seguir:
+
+---
+
+#### Na entrada de 2020, antes da pandemia de COVID-19:
+
+
+```{r, echo=FALSE}
+students_by_father_education_2020_sorted <- students_by_father_education_2020[order(-students_by_father_education_2020$PercAlunos),]
+kable(students_by_father_education_2020_sorted[1:3, c("ESCOLARIDADE_PAI", "PercAlunos"), drop=FALSE], caption="Níveis de escolaridades do pai com maior percentual de ingressantes")%>%
+  kable_styling(full_width = FALSE, position = "left")
+```
+<br>
+```{r, echo=FALSE}
+students_by_mother_education_2020_sorted <- students_by_mother_education_2020[order(-students_by_mother_education_2020$PercAlunos),]
+kable(students_by_mother_education_2020_sorted[1:3, c("ESCOLARIDADE_MAE", "PercAlunos"), drop=FALSE], caption="Níveis de escolaridade da mãe com maior percentual de ingressantes")%>%
+  kable_styling(full_width = FALSE, position = "left")
+```
+
+---
+
+#### Na entrada de 2021, após da pandemia de COVID-19:
+
+
+```{r, echo=FALSE}
+students_by_father_education_2021_sorted <- students_by_father_education_2021[order(-students_by_father_education_2021$PercAlunos),]
+kable(students_by_father_education_2021_sorted[1:3, c("ESCOLARIDADE_PAI", "PercAlunos"), drop=FALSE], caption="Níveis de escolaridades do pai com maior percentual de ingressantes")%>%
+  kable_styling(full_width = FALSE, position = "left")
+```
+<br>
+```{r, echo=FALSE}
+students_by_mother_education_2021_sorted <- students_by_mother_education_2021[order(-students_by_mother_education_2021$PercAlunos),]
+kable(students_by_mother_education_2021_sorted[1:3, c("ESCOLARIDADE_MAE", "PercAlunos"), drop=FALSE], caption="Níveis de escolaridade da mãe com maior percentual de ingressantes")%>%
+  kable_styling(full_width = FALSE, position = "left")
+```
+
+### Impactos na diversidade 
+

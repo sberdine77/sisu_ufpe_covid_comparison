@@ -1,6 +1,6 @@
-# setwd("/Users/savioberdine/Library/CloudStorage/OneDrive-Personal/Documentos/UFRPE/AnaliseDeDados/sisu_ufpe_covid_comparison")
-# install.packages("plotly")
-# library(plotly)
+setwd("/Users/savioberdine/Library/CloudStorage/OneDrive-Personal/Documentos/UFRPE/AnaliseDeDados/sisu_ufpe_covid_comparison")
+install.packages("plotly")
+library(plotly)
 install.packages("dplyr")
 library(dplyr)
 
@@ -15,7 +15,7 @@ data_2021 <- read.csv('discentes-ingressos-sisu-2021-ufpe.csv')
 df <- apply(data_2021, 2, as.character)
 Encoding(df)  <- "UTF-8"
 data_2021 <- as.data.frame(df)
-#View(data_2021)
+View(data_2021)
 
 #-------------
 
