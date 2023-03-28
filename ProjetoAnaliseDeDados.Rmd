@@ -37,6 +37,8 @@ Nos dados de 2020, constam os alunos que fizeram ENEM em 2019. Nos dados de 2021
 # install.packages("plotly")
 library(plotly)
 #install.packages("dplyr")
+library(ggplot2)
+library(ggmap)
 library(dplyr)
 library(knitr)
 library(kableExtra)
@@ -175,3 +177,58 @@ kable(students_by_mother_education_2021_sorted[1:3, c("ESCOLARIDADE_MAE", "PercA
 
 ### Impactos na diversidade 
 
+```{r, echo=FALSE}
+students_by_disability_2020 <- data_2020 %>%
+  group_by(DEFICIENCIA) %>%
+  summarise(
+    PercAlunos = (n()/nrow(data_2020)) * 100
+  )
+
+kable(students_by_disability_2020, caption="Percentual de ingressantes com e sem deficiência em 2020")%>%
+  kable_styling(full_width = FALSE, position = "left")
+
+students_by_disability_2021 <- data_2021 %>%
+  group_by(DEFICIENCIA) %>%
+  summarise(
+    PercAlunos = (n()/nrow(data_2021)) * 100
+  )
+
+kable(students_by_disability_2021, caption="Percentual de ingressantes com e sem deficiência em 2021")%>%
+  kable_styling(full_width = FALSE, position = "left")
+
+```
+<br>
+Analisando os ingressantes por gênero, percebemos que não há mudança significativa entre os anos:
+
+```{r, echo=FALSE}
+students_by_gender_2020 <- data_2020 %>%
+  group_by(SEXO) %>%
+  summarise(
+    PercAlunos = (n()/nrow(data_2020)) * 100
+  )
+
+kable(students_by_gender_2020, caption="Percentual por sexo em 2020")%>%
+  kable_styling(full_width = FALSE, position = "left")
+
+students_by_gender_2021 <- data_2021 %>%
+  group_by(SEXO) %>%
+  summarise(
+    PercAlunos = (n()/nrow(data_2021)) * 100
+  )
+
+kable(students_by_gender_2021, caption="Percentual por sexo em 2021")%>%
+  kable_styling(full_width = FALSE, position = "left")
+
+```
+
+```{r, echo=FALSE}
+idade_em_anos <- as.integer(format(Sys.Date(), "%Y")) - as.integer(data_2021$ANO_NASC)
+faixas_etarias <- cut(idade_em_anos, breaks = c(0, 18, 30, 45, Inf), labels = c("0-18", "19-30", "31-45", "46+"))
+data <- as.data.frame(faixas_etarias)
+students_by_age_group_2021 <- data_2021 %>%
+  group_by(cut(as.integer(format(Sys.Date(), "%Y")) - as.integer(data_2021$ANO_NASC), breaks = c(0, 18, 30, 45, Inf), labels = FALSE)) %>%
+  summarise(
+    PercAlunos = (n()/nrow(data_2021)) * 100
+  )
+head(students_by_age_group_2021)
+```
