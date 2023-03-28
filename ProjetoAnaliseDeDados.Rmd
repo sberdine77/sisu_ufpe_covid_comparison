@@ -18,9 +18,9 @@ knitr::opts_knit$set(root.dir = '/Users/savioberdine/Library/CloudStorage/OneDri
 A pandemia de COVID-19 afetou a vida de estudantes uniersitários de diversas maneiras. Nesse trabalho, proponho analisarmos como ela afetou o perfil dos ingressantes da Universidade Federal de Pernambuco que entraram via SISU. Para isso, compararemos os dados dos ingressantes nos anos de 2020 e 2021. Nos dados de 2020, constam os alunos que fizeram ENEM em 2019. Já nos dados de 2021, constam os alunos que fizeram ENEM em 2020, já em plena pandemia.
 <br>
 <br>
-Os dados foram retirados do portal do governo brasileiro e podem ser acessados através do link:
+Os dados foram retirados do portal do governo brasileiro no dia 21/03/2023 e podem ser acessados através do link:
 <br>
-[Ingressantes 2020 e 2021](https://dados.gov.br/dados/conjuntos-dados/discentes-ingressos-sisu-ufpe)
+[Ingressantes 2020 e 2021](https://dados.gov.br/dados/conjuntos-dados/inscricoes-sisu)
 
 <br>
 Essa análise comparará indicativos de diversidadedos ingressantes dos dois anos, com a intenção de entender como a pandemia de COVID-19 pode ter afetadop esses indicadores. Serão extraídos e comparados dados ano a ano, resultados serão expressados diretamente e tendências serão indicadas para posterior estudo, quando a UFPE liberar os dados dos ingressantes  dos próximos anos.
