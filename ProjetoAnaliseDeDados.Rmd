@@ -1,5 +1,5 @@
 ---
-title: "Projeto Análise de dados"
+title: "Projeto Análise de Dados"
 output: html_document
 date: "2023-03-21"
 ---
@@ -9,34 +9,32 @@ knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_knit$set(root.dir = '/Users/savioberdine/Library/CloudStorage/OneDrive-Personal/Documentos/UFRPE/AnaliseDeDados/sisu_ufpe_covid_comparison')
 ```
 
-## R Markdown
+# {.tabset}
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+## Introdução
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+### Impactos da pandemia de COVID-19 na entrada de estudantes da UFPE via SISU
+<br>
+A pandemia de COVID-19 afetou a vida de estudantes uniersitários de diversas maneiras. Nesse trabalho, proponho analisarmos como ela afetou o perfil dos ingressantes da Universidade Federal de Pernambuco que entraram via SISU. Para isso, compararemos os dados dos ingressantes nos anos de 2020 e 2021. Nos dados de 2020, constam os alunos que fizeram ENEM em 2019. Já nos dados de 2021, constam os alunos que fizeram ENEM em 2020, já em plena pandemia.
+<br>
+<br>
+Os dados foram retirados do portal do governo brasileiro e podem ser acessados através do link:
+<br>
+[Ingressantes 2020 e 2021](https://dados.gov.br/dados/conjuntos-dados/discentes-ingressos-sisu-ufpe)
 
-```{r cars}
-summary(cars)
-```
+<br>
+Essa análise comparará indicativos de diversidadedos ingressantes dos dois anos, com a intenção de entender como a pandemia de COVID-19 pode ter afetadop esses indicadores. Serão extraídos e comparados dados ano a ano, resultados serão expressados diretamente e tendências serão indicadas para posterior estudo, quando a UFPE liberar os dados dos ingressantes  dos próximos anos.
 
-## Including Plots
+<br>
+É esperado que essa análise contribua para maior consciência situacional dos gestores de uniersidades públicas, mais especificamente da UFPE, e os ajude a montar estratégias de inclusão mais adequadas ao momento atual no que diz respeito aos ingressantes ia SISU.
 
-You can also embed plots, for example:
+<br>
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Pacotes necessários
 
-## Impactos da pandemia de COVID-19 na entrada de estudantes da UFPE via SISU
-
-Nos dados de 2020, constam os alunos que fizeram ENEM em 2019. Nos dados de 2021, constam os alunos que fizeram ENEM em 2020, já em plena pandemia.
-
-```{r, include=FALSE}
-# install.packages("plotly")
+```{r, echo=TRUE, results='hide'}
 library(plotly)
-#install.packages("dplyr")
 library(ggplot2)
 library(ggmap)
 library(dplyr)
@@ -44,24 +42,34 @@ library(knitr)
 library(kableExtra)
 ```
 
-### Começamos extraindo os dados das respectivas planilhas e colocamo-os em datasets:
+## Tratamento inicial dos dados
 
+### Começamos extraindo os dados das respectivas planilhas e colocando-os em datasets:
+<br>
+Aqui, realizamos um primeiro tratamento para a correta exibição dos caracteres em língua portuguesa
 ```{r}
 data_2020 <- read.csv('discentes-ingressos-sisu-2020-ufpe.csv')
 df <- apply(data_2020, 2, as.character)
 Encoding(df)  <- "UTF-8"
 data_2020 <- as.data.frame(df)
-#View(data_2020)
+
+kable(head(data_2020), caption="Ingressantes 2020")%>%
+  kable_styling(full_width = FALSE, position = "left")
 
 data_2021 <- read.csv('discentes-ingressos-sisu-2021-ufpe.csv')
 df <- apply(data_2021, 2, as.character)
 Encoding(df)  <- "UTF-8"
 data_2021 <- as.data.frame(df)
-#View(data_2021)
+
+kable(head(data_2021), caption="Ingressantes 2021")%>%
+  kable_styling(full_width = FALSE, position = "left")
 ```
 
-
-### Criamos um dataset com duas novas variáveis: QtdAlunos e PercAlunos, representando a quantidade de alunos e o percentual de alunos agrupados pela escolaridade do pai:
+## Escolaridade dos progenitores
+<br>
+Um novo tratamento torna-se necessário para desconsiderar entradas em que a escolaridade do pai é uma string vazia.
+<br>
+Também criamos duas novas variáveis: QtdAlunos e PercAlunos, representando a quantidade de alunos e o percentual de alunos agrupados de acordo com escolaridade do pai:
 
 ```{r}
 students_by_father_education_2020 <- data_2020 %>%
@@ -80,8 +88,10 @@ barplot(main = "2020 - Estudantes de acordo com a educação do pai",
         las = 1,
         cex.names = 0.5)
 ```
-
-### Perceba que, criando as mesmas variáveis para a escolaridade da mãe e analisando o gráfico, parece haver uma similaridade com os dados da escolaridade do pai:
+<br>
+Realizamos os mesmos tratamentos para analisar a escolaridade da mãe.
+<br>
+Perceba que, analisando o gráfico e comparando com o anterior, parece haver uma similaridade com os dados da escolaridade do pai:
 
 ```{r}
 students_by_mother_education_2020 <- data_2020 %>%
@@ -101,7 +111,10 @@ barplot(main = "2020 - Estudantes de acordo com a educação da mãe",
         cex.names = 0.5)
 ```
 
-### Investigando mais a fundo percebemos que, em 2021, mesmo com percentuais diferentes para cada tipo de escolaridade, os percentuais de alunos ingressantes por escolaridade do pai e mãe permanecem similares entre si:
+<br>
+Aqui, o tratamento de strings vazias e de agrupamento percentual de ingressantes de acordo com o n~ivel educacional é idêntico aos blocos anteriores. Porén, é aplicado ao dataset de 2021. 
+<br>
+Investigando mais a fundo percebemos que, em 2021, a similaridade entre o nível de escolaridade dos progenitores se mantém. Entretanto, o perfil educacional muda drasticamente:
 
 ```{r}
 students_by_father_education_2021 <- data_2021 %>%
@@ -144,16 +157,17 @@ Podemos perceber a partir dos dados que, o nível de escolaridade dos pais dos i
 ---
 
 #### Na entrada de 2020, antes da pandemia de COVID-19:
+<br>
+Aqui, ordenamos de forma decrescente a porcentagem de ingressantes de acordo com a escolaridade do pai e da mãe em 2020:
 
-
-```{r, echo=FALSE}
+```{r}
 students_by_father_education_2020_sorted <- students_by_father_education_2020[order(-students_by_father_education_2020$PercAlunos),]
+students_by_mother_education_2020_sorted <- students_by_mother_education_2020[order(-students_by_mother_education_2020$PercAlunos),]
+```
+```{r, echo=FALSE}
 kable(students_by_father_education_2020_sorted[1:3, c("ESCOLARIDADE_PAI", "PercAlunos"), drop=FALSE], caption="Níveis de escolaridades do pai com maior percentual de ingressantes")%>%
   kable_styling(full_width = FALSE, position = "left")
-```
-<br>
-```{r, echo=FALSE}
-students_by_mother_education_2020_sorted <- students_by_mother_education_2020[order(-students_by_mother_education_2020$PercAlunos),]
+
 kable(students_by_mother_education_2020_sorted[1:3, c("ESCOLARIDADE_MAE", "PercAlunos"), drop=FALSE], caption="Níveis de escolaridade da mãe com maior percentual de ingressantes")%>%
   kable_styling(full_width = FALSE, position = "left")
 ```
@@ -162,22 +176,72 @@ kable(students_by_mother_education_2020_sorted[1:3, c("ESCOLARIDADE_MAE", "PercA
 
 #### Na entrada de 2021, após da pandemia de COVID-19:
 
+<br>
+Aqui, ordenamos de forma decrescente a porcentagem de ingressantes de acordo com a escolaridade do pai e da mãe em 2021:
+```{r}
+students_by_father_education_2021_sorted <- students_by_father_education_2021[order(-students_by_father_education_2021$PercAlunos),]
+students_by_mother_education_2021_sorted <- students_by_mother_education_2021[order(-students_by_mother_education_2021$PercAlunos),]
+```
 
 ```{r, echo=FALSE}
-students_by_father_education_2021_sorted <- students_by_father_education_2021[order(-students_by_father_education_2021$PercAlunos),]
 kable(students_by_father_education_2021_sorted[1:3, c("ESCOLARIDADE_PAI", "PercAlunos"), drop=FALSE], caption="Níveis de escolaridades do pai com maior percentual de ingressantes")%>%
   kable_styling(full_width = FALSE, position = "left")
-```
-<br>
-```{r, echo=FALSE}
-students_by_mother_education_2021_sorted <- students_by_mother_education_2021[order(-students_by_mother_education_2021$PercAlunos),]
+
 kable(students_by_mother_education_2021_sorted[1:3, c("ESCOLARIDADE_MAE", "PercAlunos"), drop=FALSE], caption="Níveis de escolaridade da mãe com maior percentual de ingressantes")%>%
   kable_styling(full_width = FALSE, position = "left")
 ```
 
-### Impactos na diversidade 
+---
+
+<br>
+Quando plotamos os dados num gráfico polar fica evidente que o perfil educacional dos progenitores é mais elevado após a pandemia. Enquanto, em 2020, os maiores percentuais de ingressantes tinham como progenitores, pessoas com nível educacional baixo. Por exemplo, comparemos a escolaridade da mãe:
+
+#### 2020
 
 ```{r, echo=FALSE}
+ggplot(students_by_mother_education_2020, aes(x = ESCOLARIDADE_MAE, y = PercAlunos)) +
+  geom_bar(stat = "identity") +
+  coord_polar(theta = "x") +
+  theme(axis.text.x = element_text(size = 5))
+```
+
+#### 2021
+
+```{r, echo=FALSE}
+ggplot(students_by_mother_education_2021, aes(x = ESCOLARIDADE_MAE, y = PercAlunos)) +
+  geom_bar(stat = "identity") +
+  coord_polar(theta = "x") +
+  theme(axis.text.x = element_text(size = 5))
+```
+<br>
+E do pai:
+
+#### 2020
+
+```{r, echo=FALSE}
+ggplot(students_by_father_education_2020, aes(x = ESCOLARIDADE_PAI, y = PercAlunos)) +
+  geom_bar(stat = "identity") +
+  coord_polar(theta = "x") +
+  theme(axis.text.x = element_text(size = 5))
+```
+
+#### 2021
+
+```{r, echo=FALSE}
+ggplot(students_by_father_education_2021, aes(x = ESCOLARIDADE_PAI, y = PercAlunos)) +
+  geom_bar(stat = "identity") +
+  coord_polar(theta = "x") +
+  theme(axis.text.x = element_text(size = 5))
+```
+
+## Impactos na diversidade 
+
+<br>
+Iniciaremos analisando o percentual de ingressantes com deficiência, ano a ano. Podemos notar que, em 2021, após a pandemia, apesar de a diferença ter sido pouca, houve um aumento na diversidade dos ingressantes no que diz respeito à pessoas com deficiência.
+
+<br>
+Aqui, foi necessário o agrupamento de ingressantes de acordo com a variável DEFICIENCIA. Foi criada uma nova variável PercAlunos para indicar o percentual de alunos com e sem deficiência. Esse tratamento é aplicado nos datasets dos dois anos:
+```{r}
 students_by_disability_2020 <- data_2020 %>%
   group_by(DEFICIENCIA) %>%
   summarise(
@@ -197,10 +261,15 @@ kable(students_by_disability_2021, caption="Percentual de ingressantes com e sem
   kable_styling(full_width = FALSE, position = "left")
 
 ```
-<br>
-Analisando os ingressantes por gênero, percebemos que não há mudança significativa entre os anos:
 
-```{r, echo=FALSE}
+---
+
+<br>
+Analisando os ingressantes por gênero, percebemos que não há mudança significativa entre os anos.
+<br>
+Aqui, foi necessário o agrupamento de ingressantes de acordo com a variável SEXO. Foi criada uma nova variável PercAlunos para indicar o percentual de alunos de acordo com o gênero. Esse tratamento é aplicado nos datasets dos dois anos:
+
+```{r}
 students_by_gender_2020 <- data_2020 %>%
   group_by(SEXO) %>%
   summarise(
@@ -221,14 +290,131 @@ kable(students_by_gender_2021, caption="Percentual por sexo em 2021")%>%
 
 ```
 
-```{r, echo=FALSE}
-idade_em_anos <- as.integer(format(Sys.Date(), "%Y")) - as.integer(data_2021$ANO_NASC)
-faixas_etarias <- cut(idade_em_anos, breaks = c(0, 18, 30, 45, Inf), labels = c("0-18", "19-30", "31-45", "46+"))
-data <- as.data.frame(faixas_etarias)
-students_by_age_group_2021 <- data_2021 %>%
-  group_by(cut(as.integer(format(Sys.Date(), "%Y")) - as.integer(data_2021$ANO_NASC), breaks = c(0, 18, 30, 45, Inf), labels = FALSE)) %>%
+---
+
+<br>
+Vamos agora comparar a distribuição de ingressantes de acordo com a faixa etária. Percebe-se que a distribuição permanece muito similar, como mostrado nos gráficos abaixo. Seguimos então com uma investigação um pouco mais detalhada logo após.
+
+<br>
+Aqui, utilizamos a fórmula "format(Sys.Date(), "%Y")) - as.integer(ANO_NASC)" aplicada à variável ANO_NASC para calcular a idade de cada ingressante ao mesmo tempo em que comparamos via condicionais essa idade a um range de faixa etária e criamos uma nova coluna no dataset para indicar a faixa etária de cada ingressante nos  intervalos  0-14, 15-19, 20-24, 25-29, 30-34, 35-39, 40-44, 45-59, 50-55, 55-60, >60. Aplicamos esse tratamento às duas tabelas (2020 e 2021).
+
+```{r}
+data <- data_2020
+data_age_groups <- data %>% 
+  mutate(
+    # Create categories
+    age_group = dplyr::case_when(
+      as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) <= 14            ~ "0-14",
+      as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) > 14 & as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) <= 19 ~ "15-19",
+      as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) > 19 & as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) <= 24 ~ "20-24",
+      as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) > 24 & as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) <= 29 ~ "25-29",
+      as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) > 29 & as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) <= 34 ~ "30-34",
+      as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) > 34 & as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) <= 39 ~ "35-39",
+      as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) > 39 & as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) <= 44 ~ "40-44",
+      as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) > 44 & as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) <= 49 ~ "45-49",
+      as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) > 49 & as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) <= 54 ~ "50-54",
+      as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) > 54 & as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) <= 59 ~ "55-59",
+      as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) > 59 & as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) <= 64 ~ "60-64",
+      as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) > 64             ~ "> 64"
+    )
+  )
+students_by_age_group_2020 <- data_age_groups %>%
+  group_by(age_group) %>%
   summarise(
+    PercAlunos = (n()/nrow(data_age_groups)) * 100
+  )
+par(mar = c(5, 10, 5, 5))
+barplot(main = "2020 - Ingressantes de acordo com faixa etária", 
+        students_by_age_group_2020$PercAlunos, 
+        names.arg = students_by_age_group_2020$age_group, 
+        horiz = FALSE, 
+        las = 1,
+        cex.names = 0.5)
+
+data <- data_2021
+data_age_groups <- data %>% 
+  mutate(
+    # Create categories
+    age_group = dplyr::case_when(
+      as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) <= 14            ~ "0-14",
+      as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) > 14 & as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) <= 19 ~ "15-19",
+      as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) > 19 & as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) <= 24 ~ "20-24",
+      as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) > 24 & as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) <= 29 ~ "25-29",
+      as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) > 29 & as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) <= 34 ~ "30-34",
+      as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) > 34 & as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) <= 39 ~ "35-39",
+      as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) > 39 & as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) <= 44 ~ "40-44",
+      as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) > 44 & as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) <= 49 ~ "45-49",
+      as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) > 49 & as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) <= 54 ~ "50-54",
+      as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) > 54 & as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) <= 59 ~ "55-59",
+      as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) > 59 & as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) <= 64 ~ "60-64",
+      as.integer(format(Sys.Date(), "%Y")) - as.integer(ANO_NASC) > 64             ~ "> 64"
+    )
+  )
+students_by_age_group_2021 <- data_age_groups %>%
+  group_by(age_group) %>%
+  summarise(
+    PercAlunos = (n()/nrow(data_age_groups)) * 100
+  )
+
+diff_out_of_20_34 = sum(sum(students_by_age_group_2021$PercAlunos[students_by_age_group_2021$age_group != "20-24" & students_by_age_group_2021$age_group != "25-29" & students_by_age_group_2021$age_group != "30-34"] - students_by_age_group_2020$PercAlunos[students_by_age_group_2020$age_group != "20-24" & students_by_age_group_2020$age_group != "25-29" & students_by_age_group_2020$age_group != "30-34"]))
+
+par(mar = c(5, 10, 5, 5))
+barplot(main = "2020 - Ingressantes de acordo com faixa etária", 
+        students_by_age_group_2021$PercAlunos, 
+        names.arg = students_by_age_group_2021$age_group, 
+        horiz = FALSE, 
+        las = 1,
+        cex.names = 0.5)
+
+```
+
+---
+
+<br>
+Percentualmente, podemos perceber que, apesar de a distribuição ter se mantido similar, a porcentagem de alunos fora da faixa dos 20-34 anos aumentou em `r diff_out_of_20_34`%. Isso pode indicar um aumento na diversidade etária por conta da pandemia, entretanto é necessário que comparemos com anos anteriores a 2020 e com os próximos anos para afirmarmos com maior respaldo.
+
+```{r, echo=FALSE}
+kable(students_by_age_group_2020, caption="Percentual por faixa etária em 2020")%>%
+  kable_styling(full_width = FALSE, position = "left")
+
+kable(students_by_age_group_2021, caption="Percentual por faixa etária em 2021")%>%
+  kable_styling(full_width = FALSE, position = "left")
+```
+
+## Distribuição geográfica
+<br> Vamos analisar o percentual de ingressantes que vivem fora da região metropolitana do Recife. Vale notar que, assim como os indicativos de diversidade encontrados nos dados, a quantidade de estudantes que moram em cidades fora da região metropolitana aumentou ligeiramente.
+
+<br>
+Aqui, criamos um vetor com as cidades da região metropolitana do Recife na mesma formatação que os dados fornecidos pela UFPE. Logo após, filtramos os ingressantes que estão ora da região metropolitana e calculamos o percentual deles comparado ao total de ingressantes.
+
+```{r}
+metropolitan_area <- c("RECIFE", "JABOATAO DOS GUARARAPES", "OLINDA", "PAULISTA", "IGARASSU", "ABREU E LIMA", "CAMARAGIBE", "CABO DE SANTO AGOSTINHO", "SÃO LOURENCO DA MATA", "ARACOIABA", "ILHA DE ITAMARACA", "IPOJUCA", "MORENO", "ITAPISSUMA")
+data_not_metropolitan_area_2020 <- data_2020 %>%
+  filter(!(CIDADE_ENDERECO %in% metropolitan_area)) %>%
+  summarise(
+    ano = "2020",
+    PercAlunos = (n()/nrow(data_2020)) * 100
+  )
+
+data_not_metropolitan_area_2021 <- data_2021 %>%
+  filter(!(CIDADE_ENDERECO %in% metropolitan_area)) %>%
+  summarise(
+    ano = "2021",
     PercAlunos = (n()/nrow(data_2021)) * 100
   )
-head(students_by_age_group_2021)
+
+data_not_metropolitan_area <- full_join(data_not_metropolitan_area_2020, data_not_metropolitan_area_2021, by = join_by(ano, PercAlunos))
+kable(data_not_metropolitan_area, caption="Percentual fora da região metropolitana de Recife")%>%
+  kable_styling(full_width = FALSE, position = "left")
 ```
+
+## Conclusões
+
+<br>
+Podemos notar que os dados indicam um impacto significativo no perfil dos ingressantes do SISU UFFPE logo após a pandemia de COVID-19.
+<br>
+Surpreendentemente, os indicadores gerais de diversidade disponibilizados nos datasets melhoraram ligeiramente no SISU 2021. Entretanto, um indicador muito relevante de situação social, que é o nível de escolaridade dos progenitores, piorou de forma expressiva.
+<br><br>
+Mais análises são necessárias para confirmar se essas mudanças foram um outlier ou são uma tendência recorrente. Por exemplo, até a data de início  dessa análise, não estavam disponíevis os dados de anos anteriores a 2020 enm posteriores a 2021. Com a liberação de novos datasets, caso eles contenham as mesmas variáveis, o mesmo código em R poderá ser aplicado para entender se esse impacto foi pontual ou se está sendo recorrente.
+<br><br>
+Caso essa análise seja feita ano a ano, é esperado que os gestoresde universidades públicas federais sejam capazes de agir e montar políticas de inclusão mais adequadas ao ano corrente.
